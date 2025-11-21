@@ -43,15 +43,15 @@ ColumnLayout {
                 description:    qsTr("placeholder")
                 param:          "CT_KP_XY"
                 min:            0
-                max:            2
-                step:           0.05
+                max:            20
+                step:           0.0
             }
             ListElement {
                 title:          qsTr("Integral gain (KI_XY)")
                 description:    qsTr("placeholder")
                 param:          "CT_KI_XY"
                 min:            0
-                max:            2
+                max:            20
                 step:           0.05
             }
             ListElement {
@@ -59,7 +59,7 @@ ColumnLayout {
                 description:    qsTr("placeholder")
                 param:          "CT_KD_XY"
                 min:            0
-                max:            2
+                max:            20
                 step:           0.05
             }
             }
@@ -76,24 +76,24 @@ ColumnLayout {
                 description:    qsTr("placeholder")
                 param:          "CT_KP_Z"
                 min:            0
-                max:            2
-                step:           0.01
+                max:            30
+                step:           0.05
             }
             ListElement {
                 title:          qsTr("Integral gain (KI_Z)")
                 description:    qsTr("placeholder")
                 param:          "CT_KI_Z"
                 min:            0
-                max:            2
-                step:           0.01
+                max:            20
+                step:           0.05
             }
             ListElement {
                 title:          qsTr("Derivative gain (KD_Z)")
                 description:    qsTr("placeholder")
                 param:          "CT_KD_Z"
                 min:            0
-                max:            2
-                step:           0.01
+                max:            30
+                step:           0.05
             }
             }
 

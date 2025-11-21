@@ -32,15 +32,15 @@ AutoPilotPlugin* CustomFirmwarePlugin::autopilotPlugin(Vehicle* vehicle)
     };
 
     static const struct Mode2Name rgModes2Name[] = {
-        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,      0,    	&manualModeName },
+        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,          0,    	&manualModeName },
         { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,          0,    	&stabilizeModeName },
-        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,       MISSION,  &missionModeName },
-        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,       POSITION, &posModeName },
-        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,       ALTITUDE, &altModeName },
+        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,       MISSION,     &missionModeName },
+        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,       POSITION,    &posModeName },
+        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,       ALTITUDE,    &altModeName },
         { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,       LANDING, 	&landingModeName },
         { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,       TAKEOFF, 	&takeoffModeName },
-        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,         0,    	&autoModeName },
-        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,         0,    	&testModeName },
+        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,          0,    	&autoModeName },
+        { MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,          0,    	&testModeName },
     };
 
     // Convert static information to dynamic list. This allows for plugin override class to manipulate list.
@@ -80,7 +80,8 @@ QString CustomFirmwarePlugin::flightMode(uint8_t base_mode, uint32_t custom_mode
     QString flightMode = "Unknown";
         bool found = false;
         foreach (const FlightModeInfo_t& info, _flightModeInfoList) {
-          if ((info.main_mode == base_mode) && (info.custom_mode == custom_mode)) {
+            //
+            if ((info.main_mode == ((base_mode | MAV_MODE_FLAG_SAFETY_ARMED ) ^ MAV_MODE_FLAG_SAFETY_ARMED)) && (info.custom_mode == custom_mode)) {
                 flightMode = *info.name;
                 found = true;
                 break;
@@ -152,6 +153,20 @@ void CustomFirmwarePlugin::guidedModeTakeoff(Vehicle* vehicle, double takeoffAlt
 }
 
 void CustomFirmwarePlugin::startMission(Vehicle* vehicle) {
+    // Set mission sequence number to the first waypoint
+    vehicle->sendMavCommandInt(
+        vehicle->defaultComponentId(),
+        MAV_CMD_DO_SET_MISSION_CURRENT,
+        MAV_FRAME_LOCAL_NED,
+        true,
+        0,
+        0,
+        NAN,
+        NAN,
+        NAN,
+        NAN,
+        NAN
+        );
     if (_setFlightModeAndValidate(vehicle, missionFlightMode())) {
         if (!_armVehicleAndValidate(vehicle)) {
             qgcApp()->showAppMessage(tr("Unable to start mission: Vehicle rejected arming."));
